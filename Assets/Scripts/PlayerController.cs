@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] bool facingRight = true;  // For determining which way the player is currently facing.
     public bool isGrounded; // is the player on the ground?
 
-
+    public AudioSource audioSource;
     private void Awake()
     {
         // get components, stop game if not found
@@ -127,6 +127,7 @@ public class PlayerController : MonoBehaviour
             // reset for late jump
             lastTimeGrounded = Time.time;
             animator.SetBool("IsJumping", true);
+            audioSource.Play(); 
         }
     }
 
