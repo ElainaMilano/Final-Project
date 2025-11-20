@@ -6,6 +6,7 @@ public class Mushroom : MonoBehaviour
     public int ammunition;
     public SpriteRenderer spriteRenderer;
     public PolygonCollider2D polygonCollider2D;
+    public int secondsUntilRespawn = 10;
 
     void OnValidate()
     {
@@ -19,15 +20,15 @@ public class Mushroom : MonoBehaviour
     {
         if (health > 0)
         {
-            EventManager.TriggerEvent("IncreasePlayerHealth", health);
+            EventManager.TriggerEvent("UpdatePlayerHealth", health);
         }
         else if (ammunition > 0)
         {
-            EventManager.TriggerEvent("IncreasePlayerAmmunition", ammunition);
+            EventManager.TriggerEvent("UpdatePlayerAmmunition", ammunition);
         }
         Disable();
-        // once consumed, reappear after 1 minute 
-        Invoke("Enable", 10);
+        // once consumed, enable after n seconds 
+        Invoke("Enable", secondsUntilRespawn);
     }
 
     void Enable()

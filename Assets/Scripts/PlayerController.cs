@@ -52,6 +52,15 @@ public class PlayerController : MonoBehaviour
     public bool isGrounded; // is the player on the ground?
 
     public AudioSource audioSource;
+    public AudioClip jump;
+    public AudioClip eatMushroom;
+    public AudioClip shoot;
+    public AudioClip hurt;
+
+
+
+
+
     private void Awake()
     {
         // get components, stop game if not found
@@ -127,7 +136,7 @@ public class PlayerController : MonoBehaviour
             // reset for late jump
             lastTimeGrounded = Time.time;
             animator.SetBool("IsJumping", true);
-            audioSource.Play(); 
+            PlaySound(jump);
         }
     }
 
@@ -187,14 +196,30 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("IsJumping", false);
     }
 
-
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Touched an enemy");
+            EventManager.TriggerEvent("UpdatePlayerHealth", -1);
+            PlaySound(hurt);
+        }
+    }
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Mushroom"))
         {
             Debug.Log("Eat Mushroom");
             collision.gameObject.GetComponent<Mushroom>().Eat();
+            PlaySound(eatMushroom);
         }
-        
     }
+
+    void PlaySound(AudioClip clip)
+    {
+        if (clip != null)
+            audioSource.clip = clip;
+        audioSource.Play();
+    }
+
 }
