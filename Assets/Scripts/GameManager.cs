@@ -3,29 +3,38 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+
+public int health;
+public int ammunition;
+
     public TMP_Text ammunitionText;
     public TMP_Text healthText;
 
     void OnEnable()
     {
-        EventManager.StartListening("IncreasePlayerHealth", IncreasePlayerHealth);
-        EventManager.StartListening("IncreasePlayerAmmunition", IncreasePlayerAmmunition);
+        EventManager.StartListening("UpdatePlayerHealth", UpdatePlayerHealth);
+        EventManager.StartListening("UpdatePlayerAmmunition", UpdatePlayerAmmunition);
+
+        UpdatePlayerHealth(3);
+        UpdatePlayerAmmunition(0);
     }
     void OnDisable()
     {
-        EventManager.StopListening("IncreasePlayerHealth", IncreasePlayerHealth);
-        EventManager.StopListening("IncreasePlayerAmmunition", IncreasePlayerAmmunition);
+        EventManager.StopListening("UpdatePlayerHealth", UpdatePlayerHealth);
+        EventManager.StopListening("UpdatePlayerAmmunition", UpdatePlayerAmmunition);
     }
 
 
-    void IncreasePlayerHealth(object data)
+    void UpdatePlayerHealth(object data)
     {
-        healthText.text = healthText.text + (int)data;
+        health += (int)data;
+        healthText.text = "Health: " + health;
     }
 
-    void IncreasePlayerAmmunition(object data)
+    void UpdatePlayerAmmunition(object data)
     {
-        ammunitionText.text = ammunitionText.text + (int)data;
+        ammunition += (int)data;
+        ammunitionText.text = "Ammo: " + ammunition;
     }
 
 }
