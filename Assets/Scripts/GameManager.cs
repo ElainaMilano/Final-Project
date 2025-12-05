@@ -29,6 +29,12 @@ public int ammunition;
     {
         health += (int)data;
         healthText.text = "Health: " + health;
+
+        if (health <= 0)
+        {
+            Debug.Log("Player died");
+            EventManager.TriggerEvent("PlayerDied");
+        }
     }
 
     void UpdatePlayerAmmunition(object data)

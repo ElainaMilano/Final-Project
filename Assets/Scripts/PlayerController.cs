@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// Basic 2D platformer character controller
 /// 2022 Owen Mundy
@@ -58,6 +59,14 @@ public class PlayerController : MonoBehaviour
     public AudioClip hurt;
 
 
+    void OnEnable()
+    {
+        EventManager.StartListening("PlayerDied", PlayerDied);
+    }
+    void OnDisable()
+    {
+        EventManager.StopListening("PlayerDied", PlayerDied);
+    }
 
 
 
@@ -220,6 +229,14 @@ public class PlayerController : MonoBehaviour
         if (clip != null)
             audioSource.clip = clip;
         audioSource.Play();
+    }
+
+    void PlayerDied()
+    {
+        // play the died animation
+
+        // reload the scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
 }
