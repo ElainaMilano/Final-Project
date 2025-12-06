@@ -4,8 +4,22 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
 
-public int health;
-public int ammunition;
+    public static GameManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+    public int health;
+    public int ammunition;
 
     public TMP_Text ammunitionText;
     public TMP_Text healthText;

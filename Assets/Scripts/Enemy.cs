@@ -63,6 +63,8 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (transform == null) return;
+
         // determine direction (non-physics)
         if (!_switch)
             rig.position = Vector3.MoveTowards(rig.position, start.position, _speed * Time.deltaTime);
@@ -87,8 +89,6 @@ public class Enemy : MonoBehaviour
         }
 
     }
-
-
 
 
 

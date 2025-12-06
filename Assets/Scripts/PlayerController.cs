@@ -8,16 +8,20 @@ using UnityEngine.SceneManagement;
 /// https://www.youtube.com/watch?v=dwcT-Dch0bA&list=PLPV2KyIb3jR6TFcFuzI2bB7TMNIIBpKMQ&index=2&t=1008s
 
 
-// Ensure required components are also added to Game Object
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("References")]
+
+    public Transform rig;
+    public GameObject projectile;
+    public Rigidbody2D rb2d;
+    public Animator animator;
+
+
     [Header("Input")]
 
     // horizontal movement speed and direction
     public Vector2 playerInput;
-
     // boolean to detect / test jump input
     [SerializeField] bool jumpPress = false;
     [SerializeField] bool jumpHold = false;
@@ -26,7 +30,6 @@ public class PlayerController : MonoBehaviour
     [Header("Parameters")]
 
     [SerializeField] private LayerMask groundLayer; // A mask determining what is ground to the character
-    [SerializeField] private Transform ceilingCheck; // A position marking where to check for ceilings
     [SerializeField] private Transform groundCheck; // A position marking where to check if the player is isGrounded.
 
     private Vector3 velocity = Vector3.zero;
@@ -43,12 +46,10 @@ public class PlayerController : MonoBehaviour
     public float rememberGroundedFor = 0.1f;
     float lastTimeGrounded;
 
-    private Rigidbody2D rb2d;
-
+    public bool shooting;
 
     [Header("Display")]
 
-    public Animator animator;
     [SerializeField] bool facingRight = true;  // For determining which way the player is currently facing.
     public bool isGrounded; // is the player on the ground?
 
@@ -72,27 +73,14 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        // get components, stop game if not found
-        rb2d = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-        if (!rb2d || !animator)
-        {
-            Debug.LogError("Rigidbody2D and Animator required");
-            UnityEditor.EditorApplication.isPlaying = false;
-        }
-
-        // get child objects, stop game if not found
-        groundCheck = transform.Find("GroundCheck").gameObject.transform;
-        ceilingCheck = transform.Find("CeilingCheck").gameObject.transform;
-        if (!groundCheck || !ceilingCheck)
-        {
-            Debug.LogError("GroundCheck and CeilingCheck required");
-            UnityEditor.EditorApplication.isPlaying = false;
-        }
+        projectile.SetActive(false);
     }
 
     private void Update()
     {
+        if (Input.GetMouseButtonDown(0) || Input.GetKey("q"))
+            Shoot();
+
         // get horizontal input (between -1 and 1) from player
         playerInput.x = Input.GetAxisRaw("Horizontal");
         Move(playerInput.x * runSpeed * Time.fixedDeltaTime);
@@ -106,6 +94,21 @@ public class PlayerController : MonoBehaviour
 
         // whether currently on ground (collision detection)
         CheckIfGrounded();
+    }
+
+    async public void Shoot()
+    {
+        if (shooting) return;
+        if (GameManager.Instance.ammunition > 0)
+        {
+            shooting = true;
+            EventManager.TriggerEvent("UpdatePlayerAmmunition", -1);
+            projectile.SetActive(true);
+            await Awaitable.WaitForSecondsAsync(1.5f);
+            if (projectile != null)
+                projectile.SetActive(false);
+            shooting = false;
+        }
     }
 
     public void Move(float move)
@@ -170,9 +173,9 @@ public class PlayerController : MonoBehaviour
         // Switch the way the player is labelled as facing.
         facingRight = !facingRight;
         // Multiply the player's x local scale by -1.
-        Vector3 theScale = transform.localScale;
+        Vector3 theScale = rig.localScale;
         theScale.x *= -1;
-        transform.localScale = theScale;
+        rig.localScale = theScale;
     }
 
     void CheckIfGrounded()
